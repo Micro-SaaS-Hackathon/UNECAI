@@ -63,7 +63,7 @@ app.get('/', (req, res) => {
 // API documentation endpoint
 app.get('/api', (req, res) => {
     res.json({
-        name: 'AuraShot API',
+        name: 'Sellora API',
         version: '1.0.0',
         description: 'AI-powered photo enhancement API',
         endpoints: {
@@ -127,7 +127,7 @@ app.use((err, req, res, next) => {
 
 // Start server
 app.listen(PORT, () => {
-    console.log(`🚀 AuraShot server running on port ${PORT}`);
+    console.log(`🚀 Sellora server running on port ${PORT}`);
     console.log(`📱 Frontend: http://localhost:${PORT}`);
     console.log(`🔧 API: http://localhost:${PORT}/api`);
     console.log(`❤️  Health: http://localhost:${PORT}/health`);

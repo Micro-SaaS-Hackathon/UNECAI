@@ -1,5 +1,5 @@
 {
-  "name": "aurashot",
+  "name": "sellora",
   "version": "1.0.0",
   "description": "AI-powered photo enhancement platform for glamour styling",
   "main": "server.js",
@@ -20,7 +20,7 @@
     "nodejs",
     "express"
   ],
-  "author": "AuraShot Team",
+  "author": "Sellora Team",
   "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
@@ -46,10 +46,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/aurashot.git"
+    "url": "https://github.com/your-username/sellora.git"
   },
   "bugs": {
-    "url": "https://github.com/your-username/aurashot/issues"
+    "url": "https://github.com/your-username/sellora/issues"
   },
-  "homepage": "https://github.com/your-username/aurashot#readme"
+  "homepage": "https://github.com/your-username/sellora#readme"
 }

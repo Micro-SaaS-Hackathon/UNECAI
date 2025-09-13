@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuraShot - Product Information</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: white;
+        }
+
+        .form-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .product-form {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .required {
+            color: #e74c3c;
+            font-weight: 700;
+        }
+
+        .optional {
+            color: #666;
+            font-weight: 400;
+            font-size: 0.85rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-input.error {
+            border-color: #e74c3c;
+            background: #fdf2f2;
+        }
+
+        .form-input.error:focus {
+            border-color: #e74c3c;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+        }
+
+        .field-help {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.25rem;
+            font-style: italic;
+        }
+
+        .checkbox-group {
+            margin-bottom: 2rem;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .form-checkbox {
+            width: 20px;
+            height: 20px;
+            margin: 0;
+            cursor: pointer;
+            accent-color: #667eea;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .form-checkbox.error {
+            accent-color: #e74c3c;
+        }
+
+        .checkbox-label {
+            font-size: 0.95rem;
+            color: #333;
+            line-height: 1.4;
+            cursor: pointer;
+            margin: 0;
+            user-select: none;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .error-message::before {
+            content: "⚠️";
+            font-size: 0.75rem;
+        }
+
+        .submit-error {
+            background: #fdf2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e1e5e9;
+        }
+
+        .btn {
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 120px;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #666;
+            border: 2px solid #e1e5e9;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #e9ecef;
+            border-color: #d1d5db;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem 0.5rem;
+            }
+            
+            .form-header h1 {
+                font-size: 2rem;
+            }
+            
+            .form-description {
+                font-size: 1rem;
+            }
+            
+            .product-form {
+                padding: 1.5rem;
+                border-radius: 16px;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            
+            .btn {
+                width: 100%;
+                min-width: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-header h1 {
+                font-size: 1.75rem;
+            }
+            
+            .product-form {
+                padding: 1rem;
+                margin: 0 0.5rem;
+            }
+            
+            .form-input {
+                padding: 0.75rem;
+                font-size: 0.95rem;
+            }
+            
+            .checkbox-wrapper {
+                gap: 0.5rem;
+            }
+            
+            .checkbox-label {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-header">
+            <h1>Product Information</h1>
+            <p class="form-description">
+                Tell us about your product to enhance your photos with AI
+            </p>
+        </div>
+
+        <form class="product-form" id="productForm" novalidate>
+            <div class="form-group">
+                <label for="productName" class="form-label">
+                    Product Name <span class="required">*</span>
+                </label>
+                <input
+                    type="text"
+                    id="productName"
+                    name="productName"
+                    placeholder="e.g. Velvet Glow Serum"
+                    class="form-input"
+                    required
+                    aria-describedby="productName-error"
+                />
+                <div id="productName-error" class="error-message" role="alert" style="display: none;"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="brandName" class="form-label">
+                    Brand Name <span class="required">*</span>
+                </label>
+                <input
+                    type="text"
+                    id="brandName"
+                    name="brandName"
+                    placeholder="e.g. Luxe Beauty Co."
+                    class="form-input"
+                    required
+                    aria-describedby="brandName-error"
+                />
+                <div id="brandName-error" class="error-message" role="alert" style="display: none;"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="shortTagline" class="form-label">
+                    Short Tagline <span class="optional">(optional)</span>
+                </label>
+                <input
+                    type="text"
+                    id="shortTagline"
+                    name="shortTagline"
+                    placeholder="e.g. Illuminate Your Natural Beauty"
+                    class="form-input"
+                    maxlength="100"
+                />
+                <div class="field-help">
+                    A catchy phrase that describes your product (max 100 characters)
+                </div>
+            </div>
+
+            <div class="form-group checkbox-group">
+                <div class="checkbox-wrapper">
+                    <input
+                        type="checkbox"
+                        id="privacyConsent"
+                        name="privacyConsent"
+                        class="form-checkbox"
+                        required
+                        aria-describedby="privacyConsent-error"
+                    />
+                    <label for="privacyConsent" class="checkbox-label">
+                        I consent to temporary image storage for processing <span class="required">*</span>
+                    </label>
+                </div>
+                <div id="privacyConsent-error" class="error-message" role="alert" style="display: none;"></div>
+            </div>
+
+            <div id="submit-error" class="error-message submit-error" role="alert" style="display: none;"></div>
+
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="goBack()">
+                    Back
+                </button>
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    Next
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Form state
+        let isSubmitting = false;
+
+        // DOM elements
+        const form = document.getElementById('productForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const inputs = form.querySelectorAll('input');
+
+        // Initialize form
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add event listeners
+            inputs.forEach(input => {
+                input.addEventListener('input', clearError);
+                input.addEventListener('blur', validateField);
+            });
+
+            form.addEventListener('submit', handleSubmit);
+        });
+
+        function clearError(e) {
+            const fieldName = e.target.name;
+            const errorElement = document.getElementById(fieldName + '-error');
+            
+            if (errorElement) {
+                errorElement.style.display = 'none';
+                e.target.classList.remove('error');
+            }
+        }
+
+        function validateField(e) {
+            const field = e.target;
+            const fieldName = field.name;
+            const errorElement = document.getElementById(fieldName + '-error');
+            
+            if (field.hasAttribute('required') && !field.value.trim()) {
+                showError(fieldName, getRequiredMessage(fieldName));
+                return false;
+            }
+            
+            if (fieldName === 'privacyConsent' && !field.checked) {
+                showError(fieldName, 'Privacy consent is required to continue');
+                return false;
+            }
+            
+            return true;
+        }
+
+        function showError(fieldName, message) {
+            const field = document.querySelector(`[name="${fieldName}"]`);
+            const errorElement = document.getElementById(fieldName + '-error');
+            
+            if (field) {
+                field.classList.add('error');
+            }
+            
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.style.display = 'flex';
+            }
+        }
+
+        function getRequiredMessage(fieldName) {
+            const messages = {
+                productName: 'Product name is required',
+                brandName: 'Brand name is required',
+                privacyConsent: 'Privacy consent is required to continue'
+            };
+            return messages[fieldName] || 'This field is required';
+        }
+
+        function validateForm() {
+            let isValid = true;
+            const errors = {};
+
+            // Validate required fields
+            const productName = document.getElementById('productName').value.trim();
+            const brandName = document.getElementById('brandName').value.trim();
+            const privacyConsent = document.getElementById('privacyConsent').checked;
+
+            if (!productName) {
+                errors.productName = 'Product name is required';
+                isValid = false;
+            }
+
+            if (!brandName) {
+                errors.brandName = 'Brand name is required';
+                isValid = false;
+            }
+
+            if (!privacyConsent) {
+                errors.privacyConsent = 'Privacy consent is required to continue';
+                isValid = false;
+            }
+
+            // Show errors
+            Object.keys(errors).forEach(fieldName => {
+                showError(fieldName, errors[fieldName]);
+            });
+
+            return isValid;
+        }
+
+        async function handleSubmit(e) {
+            e.preventDefault();
+            
+            if (isSubmitting) return;
+            
+            isSubmitting = true;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Saving...';
+
+            // Clear previous errors
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.style.display = 'none';
+            });
+            document.querySelectorAll('.form-input, .form-checkbox').forEach(el => {
+                el.classList.remove('error');
+            });
+
+            if (validateForm()) {
+                try {
+                    // Collect form data
+                    const formData = new FormData(form);
+                    const productMeta = {
+                        productName: formData.get('productName').trim(),
+                        brandName: formData.get('brandName').trim(),
+                        shortTagline: formData.get('shortTagline').trim(),
+                        privacyConsent: formData.get('privacyConsent') === 'on',
+                        createdAt: new Date().toISOString()
+                    };
+
+                    // Save to localStorage
+                    localStorage.setItem('glamgen:productMeta', JSON.stringify(productMeta));
+                    
+                    console.log('Product metadata saved:', productMeta);
+                    
+                    // Navigate to upload page
+                    window.location.href = '/upload';
+                    
+                } catch (error) {
+                    console.error('Error saving product metadata:', error);
+                    showSubmitError('Failed to save product information. Please try again.');
+                }
+            }
+
+            isSubmitting = false;
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Next';
+        }
+
+        function showSubmitError(message) {
+            const errorElement = document.getElementById('submit-error');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        // Test function for development
+        function testForm() {
+            console.log('Testing form...');
+            
+            // Fill required fields
+            document.getElementById('productName').value = 'Test Product';
+            document.getElementById('brandName').value = 'Test Brand';
+            document.getElementById('privacyConsent').checked = true;
+            
+            // Submit form
+            form.dispatchEvent(new Event('submit'));
+        }
+
+        // Make test function available globally for testing
+        window.testForm = testForm;
+    </script>
+</body>
+</html>

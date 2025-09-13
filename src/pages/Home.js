@@ -7,7 +7,7 @@ const Home = () => {
             <section className="hero">
                 <div className="container">
                     <div className="hero-content">
-                        <h1>Welcome to AuraShot</h1>
+                        <h1>Welcome to Sellora</h1>
                         <p className="hero-subtitle">
                             Transform your photos with AI-powered enhancement technology
                         </p>

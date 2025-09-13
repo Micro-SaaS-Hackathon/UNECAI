@@ -1,4 +1,4 @@
-# AuraShot
+# Sellora
 
 A modern AI-powered photo styling and glamour enhancement platform that transforms ordinary photos into stunning, professional-looking images.
 
@@ -30,7 +30,7 @@ A modern AI-powered photo styling and glamour enhancement platform that transfor
 1. Clone the repository:
 ```bash
 git clone <repository-url>
-cd AuraShot
+cd Sellora
 ```
 
 2. Install dependencies:
@@ -60,7 +60,7 @@ npm run dev
 ## Project Structure
 
 ```
-AuraShot/
+Sellora/
 ├── public/
 │   └── index.html
 ├── src/

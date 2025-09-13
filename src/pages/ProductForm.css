@@ -1,0 +1,291 @@
+/* ProductForm Styles */
+.product-form-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem 0;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.form-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: white;
+}
+
+.form-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.form-description {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin: 0;
+}
+
+.product-form {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.required {
+    color: #e74c3c;
+    font-weight: 700;
+}
+
+.optional {
+    color: #666;
+    font-weight: 400;
+    font-size: 0.85rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid #e1e5e9;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #667eea;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-input.error {
+    border-color: #e74c3c;
+    background: #fdf2f2;
+}
+
+.form-input.error:focus {
+    border-color: #e74c3c;
+    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+}
+
+.field-help {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 0.25rem;
+    font-style: italic;
+}
+
+.checkbox-group {
+    margin-bottom: 2rem;
+}
+
+.checkbox-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.form-checkbox {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: #667eea;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.form-checkbox.error {
+    accent-color: #e74c3c;
+}
+
+.checkbox-label {
+    font-size: 0.95rem;
+    color: #333;
+    line-height: 1.4;
+    cursor: pointer;
+    margin: 0;
+    user-select: none;
+}
+
+.error-message {
+    color: #e74c3c;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.error-message::before {
+    content: "⚠️";
+    font-size: 0.75rem;
+}
+
+.submit-error {
+    background: #fdf2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e1e5e9;
+}
+
+.btn {
+    padding: 0.875rem 2rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 120px;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+}
+
+.btn-secondary {
+    background: #f8f9fa;
+    color: #666;
+    border: 2px solid #e1e5e9;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: #e9ecef;
+    border-color: #d1d5db;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .product-form-page {
+        padding: 1rem 0;
+    }
+    
+    .container {
+        padding: 0 0.5rem;
+    }
+    
+    .form-header h1 {
+        font-size: 2rem;
+    }
+    
+    .form-description {
+        font-size: 1rem;
+    }
+    
+    .product-form {
+        padding: 1.5rem;
+        border-radius: 16px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .btn {
+        width: 100%;
+        min-width: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .form-header h1 {
+        font-size: 1.75rem;
+    }
+    
+    .product-form {
+        padding: 1rem;
+        margin: 0 0.5rem;
+    }
+    
+    .form-input {
+        padding: 0.75rem;
+        font-size: 0.95rem;
+    }
+    
+    .checkbox-wrapper {
+        gap: 0.5rem;
+    }
+    
+    .checkbox-label {
+        font-size: 0.9rem;
+    }
+}
+
+/* Focus and Accessibility */
+.form-input:focus,
+.form-checkbox:focus,
+.btn:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .form-input {
+        border-width: 3px;
+    }
+    
+    .error-message {
+        font-weight: 600;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .form-input,
+    .btn {
+        transition: none;
+    }
+    
+    .btn-primary:hover:not(:disabled) {
+        transform: none;
+    }
+}

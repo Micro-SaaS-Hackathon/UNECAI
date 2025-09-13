@@ -36,8 +36,8 @@ const upload = multer({
     fileFilter: fileFilter
 });
 
-// POST /api/upload - Upload photo files
-router.post('/', upload.single('photo'), (req, res) => {
+// POST /api/upload - Upload photo files with product metadata
+router.post('/', upload.single('file'), (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({
@@ -46,26 +46,50 @@ router.post('/', upload.single('photo'), (req, res) => {
             });
         }
 
+        // Extract product metadata from form data
+        const { productName, brandName } = req.body;
+        
+        if (!productName || !brandName) {
+            return res.status(400).json({
+                success: false,
+                message: 'Product name and brand name are required'
+            });
+        }
+
+        // Generate unique job ID
+        const jobId = `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
         const fileInfo = {
             id: req.file.filename,
+            jobId: jobId,
             originalName: req.file.originalname,
             filename: req.file.filename,
             path: req.file.path,
             size: req.file.size,
             mimetype: req.file.mimetype,
+            productName: productName,
+            brandName: brandName,
             uploadedAt: new Date().toISOString()
         };
+
+        // Create thumbnail URL (in production, generate actual thumbnail)
+        const thumbnailUrl = `/api/thumbnail/${fileInfo.id}`;
 
         console.log('File uploaded successfully:', fileInfo);
 
         res.status(200).json({
             success: true,
             message: 'File uploaded successfully',
+            job_id: jobId,
+            thumbnail_url: thumbnailUrl,
+            status: 'queued',
             data: {
                 fileId: fileInfo.id,
                 filename: fileInfo.filename,
                 originalName: fileInfo.originalName,
                 size: fileInfo.size,
+                productName: fileInfo.productName,
+                brandName: fileInfo.brandName,
                 uploadedAt: fileInfo.uploadedAt
             }
         });
