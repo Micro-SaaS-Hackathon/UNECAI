@@ -154,7 +154,7 @@ The app will be available at `http://localhost:3000`
 
 ### ProductForm Component
 ```
-Create a responsive "ProductForm" UI component for GlamGen:
+Create a responsive "ProductForm" UI component for Sellora:
 Fields:
 - productName (text, required, placeholder: "e.g. Velvet Glow Serum")
 - brandName (text, required)
@@ -164,7 +164,7 @@ Behavior:
 - On Next, validate required fields. If valid, persist data to local state and navigate to /upload.
 - Output accessible labels, simple inline validation messages, and mobile-friendly layout.
 - Provide a minimal export: HTML+CSS+vanilla JS (or React + Tailwind if available).
-Also include the exact localStorage key name used to persist product metadata ("glamgen:productMeta").
+Also include the exact localStorage key name used to persist product metadata ("sellora:productMeta").
 ```
 
 ### UploadPhoto Component

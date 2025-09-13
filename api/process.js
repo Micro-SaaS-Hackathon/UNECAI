@@ -1,240 +1,86 @@
 const express = require('express');
+const router = express.Router();
+const sharp = require('sharp');
 const path = require('path');
 const fs = require('fs');
-const router = express.Router();
 
-// In-memory storage for processing jobs (in production, use Redis or database)
-const processingJobs = new Map();
-
-// POST /api/process - Process uploaded photos with selected style
+// POST /api/process - Process an uploaded image
 router.post('/', async (req, res) => {
     try {
-        const { fileId, style, options = {} } = req.body;
-
-        if (!fileId || !style) {
+        const { fileId } = req.body;
+        if (!fileId) {
             return res.status(400).json({
                 success: false,
-                message: 'fileId and style are required'
+                message: 'File ID is required'
             });
         }
 
-        // Validate file exists
-        const filePath = path.join(__dirname, '../uploads', fileId);
-        if (!fs.existsSync(filePath)) {
+        const inputPath = path.join(__dirname, '../uploads', fileId);
+        const outputPath = path.join(__dirname, '../uploads', `processed_${fileId}`);
+
+        if (!fs.existsSync(inputPath)) {
             return res.status(404).json({
                 success: false,
-                message: 'File not found'
+                message: 'Input file not found'
             });
         }
 
-        // Generate unique job ID
-        const jobId = `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        // Get enhancement options
+        const removeBackground = req.body.removeBackground === 'true';
+        const adjustLighting = req.body.adjustLighting === 'true';
+        const enhanceColors = req.body.enhanceColors === 'true';
 
-        // Create processing job
-        const job = {
-            id: jobId,
-            fileId: fileId,
-            style: style,
-            options: options,
-            status: 'queued',
-            progress: 0,
-            createdAt: new Date().toISOString(),
-            startedAt: null,
-            completedAt: null,
-            result: null,
-            error: null
-        };
+        // Start with the base image
+        let imageProcess = sharp(inputPath);
 
-        processingJobs.set(jobId, job);
+        // Apply enhancements based on options
+        if (removeBackground) {
+            // In a real app, you'd use a more sophisticated background removal
+            // For now, we'll just add a white background
+            imageProcess = imageProcess.flatten({ background: { r: 255, g: 255, b: 255 } });
+        }
 
-        console.log('Processing job created:', job);
+        // Resize while maintaining aspect ratio
+        imageProcess = imageProcess.resize(1200, 1200, {
+            fit: 'inside',
+            withoutEnlargement: true
+        });
 
-        // Start processing asynchronously
-        processImage(jobId);
+        if (adjustLighting) {
+            imageProcess = imageProcess
+                .modulate({
+                    brightness: 1.1,
+                    contrast: 1.1
+                })
+                .gamma(0.9);
+        }
 
-        res.status(202).json({
+        if (enhanceColors) {
+            imageProcess = imageProcess
+                .modulate({
+                    saturation: 1.2
+                })
+                .sharpen()
+                .tint({ r: 255, g: 252, b: 250 }); // Slight warm tint
+        }
+
+        // Save the processed image
+        await imageProcess.toFile(outputPath);
+
+        res.status(200).json({
             success: true,
-            message: 'Processing started',
+            message: 'Image processed successfully',
             data: {
-                jobId: jobId,
-                status: 'queued',
-                estimatedTime: '30-60 seconds'
+                processedFileId: `processed_${fileId}`,
+                url: `/uploads/processed_${fileId}`
             }
         });
 
     } catch (error) {
-        console.error('Process error:', error);
+        console.error('Processing error:', error);
         res.status(500).json({
             success: false,
-            message: 'Processing failed to start',
-            error: error.message
-        });
-    }
-});
-
-// Simulate image processing (replace with actual AI processing)
-async function processImage(jobId) {
-    const job = processingJobs.get(jobId);
-    if (!job) return;
-
-    try {
-        // Update job status
-        job.status = 'processing';
-        job.startedAt = new Date().toISOString();
-        job.progress = 0;
-
-        // Simulate processing steps
-        const steps = [
-            { name: 'Analyzing image', duration: 5000, progress: 20 },
-            { name: 'Applying style', duration: 8000, progress: 50 },
-            { name: 'Enhancing features', duration: 6000, progress: 80 },
-            { name: 'Finalizing result', duration: 2000, progress: 100 }
-        ];
-
-        for (const step of steps) {
-            console.log(`Job ${jobId}: ${step.name}`);
-            job.progress = step.progress;
-            
-            // Simulate processing time
-            await new Promise(resolve => setTimeout(resolve, step.duration));
-        }
-
-        // Generate mock result
-        const result = {
-            originalFile: job.fileId,
-            enhancedFile: `enhanced_${job.fileId}`,
-            style: job.style,
-            processingTime: Date.now() - new Date(job.startedAt).getTime(),
-            enhancements: [
-                'Skin smoothing applied',
-                'Eye enhancement completed',
-                'Color correction optimized',
-                'Lighting improved',
-                'Style effects added'
-            ],
-            downloadUrl: `/api/download/${job.id}`,
-            previewUrl: `/api/preview/${job.id}`
-        };
-
-        // Update job with result
-        job.status = 'completed';
-        job.completedAt = new Date().toISOString();
-        job.progress = 100;
-        job.result = result;
-
-        console.log(`Job ${jobId} completed successfully`);
-
-    } catch (error) {
-        console.error(`Job ${jobId} failed:`, error);
-        job.status = 'failed';
-        job.completedAt = new Date().toISOString();
-        job.error = error.message;
-    }
-}
-
-// GET /api/process/:jobId - Get processing job status
-router.get('/:jobId', (req, res) => {
-    try {
-        const jobId = req.params.jobId;
-        const job = processingJobs.get(jobId);
-
-        if (!job) {
-            return res.status(404).json({
-                success: false,
-                message: 'Job not found'
-            });
-        }
-
-        res.status(200).json({
-            success: true,
-            data: {
-                jobId: job.id,
-                status: job.status,
-                progress: job.progress,
-                style: job.style,
-                createdAt: job.createdAt,
-                startedAt: job.startedAt,
-                completedAt: job.completedAt,
-                result: job.result,
-                error: job.error
-            }
-        });
-
-    } catch (error) {
-        console.error('Get job status error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to get job status',
-            error: error.message
-        });
-    }
-});
-
-// GET /api/process - Get all processing jobs (for admin/debugging)
-router.get('/', (req, res) => {
-    try {
-        const jobs = Array.from(processingJobs.values()).map(job => ({
-            jobId: job.id,
-            status: job.status,
-            progress: job.progress,
-            style: job.style,
-            createdAt: job.createdAt,
-            completedAt: job.completedAt
-        }));
-
-        res.status(200).json({
-            success: true,
-            data: {
-                jobs: jobs,
-                total: jobs.length,
-                active: jobs.filter(job => job.status === 'processing').length,
-                completed: jobs.filter(job => job.status === 'completed').length,
-                failed: jobs.filter(job => job.status === 'failed').length
-            }
-        });
-
-    } catch (error) {
-        console.error('Get all jobs error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to get jobs',
-            error: error.message
-        });
-    }
-});
-
-// DELETE /api/process/:jobId - Cancel/delete processing job
-router.delete('/:jobId', (req, res) => {
-    try {
-        const jobId = req.params.jobId;
-        const job = processingJobs.get(jobId);
-
-        if (!job) {
-            return res.status(404).json({
-                success: false,
-                message: 'Job not found'
-            });
-        }
-
-        if (job.status === 'processing') {
-            // In a real implementation, you would cancel the actual processing
-            job.status = 'cancelled';
-            job.completedAt = new Date().toISOString();
-        }
-
-        processingJobs.delete(jobId);
-        console.log(`Job ${jobId} deleted`);
-
-        res.status(200).json({
-            success: true,
-            message: 'Job deleted successfully'
-        });
-
-    } catch (error) {
-        console.error('Delete job error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to delete job',
+            message: 'Processing failed',
             error: error.message
         });
     }
