@@ -4,141 +4,196 @@ import './ProductForm.css';
 const ProductForm = () => {
     const [formData, setFormData] = useState({
         productName: '',
-        category: '',
-        description: '',
-        price: '',
-        style: '',
-        targetAudience: ''
+        brandName: '',
+        shortTagline: '',
+        privacyConsent: false
     });
 
+    const [errors, setErrors] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value, type, checked } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: value
+            [name]: type === 'checkbox' ? checked : value
         }));
+
+        // Clear error when user starts typing
+        if (errors[name]) {
+            setErrors(prev => ({
+                ...prev,
+                [name]: ''
+            }));
+        }
     };
 
-    const handleSubmit = (e) => {
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (!formData.productName.trim()) {
+            newErrors.productName = 'Product name is required';
+        }
+
+        if (!formData.brandName.trim()) {
+            newErrors.brandName = 'Brand name is required';
+        }
+
+        if (!formData.privacyConsent) {
+            newErrors.privacyConsent = 'Privacy consent is required to continue';
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Product form submitted:', formData);
-        // TODO: Implement product creation logic
-        alert('Product form submitted! (This is a placeholder)');
+        setIsSubmitting(true);
+
+        if (validateForm()) {
+            try {
+                // Persist data to localStorage
+                const productMeta = {
+                    productName: formData.productName.trim(),
+                    brandName: formData.brandName.trim(),
+                    shortTagline: formData.shortTagline.trim(),
+                    privacyConsent: formData.privacyConsent,
+                    createdAt: new Date().toISOString()
+                };
+
+                localStorage.setItem('glamgen:productMeta', JSON.stringify(productMeta));
+                
+                console.log('Product metadata saved:', productMeta);
+                
+                // Navigate to upload page
+                window.location.href = '/upload';
+            } catch (error) {
+                console.error('Error saving product metadata:', error);
+                setErrors({ submit: 'Failed to save product information. Please try again.' });
+            }
+        }
+
+        setIsSubmitting(false);
     };
 
     return (
         <div className="product-form-page">
             <div className="container">
-                <h1>Create Product</h1>
-                <p className="page-description">
-                    Define your product details for AI-enhanced photo generation
-                </p>
+                <div className="form-header">
+                    <h1>Product Information</h1>
+                    <p className="form-description">
+                        Tell us about your product to enhance your photos with AI
+                    </p>
+                </div>
 
-                <form className="product-form" onSubmit={handleSubmit}>
+                <form className="product-form" onSubmit={handleSubmit} noValidate>
                     <div className="form-group">
-                        <label htmlFor="productName">Product Name</label>
+                        <label htmlFor="productName" className="form-label">
+                            Product Name <span className="required">*</span>
+                        </label>
                         <input
                             type="text"
                             id="productName"
                             name="productName"
                             value={formData.productName}
                             onChange={handleInputChange}
-                            placeholder="Enter product name"
+                            placeholder="e.g. Velvet Glow Serum"
+                            className={`form-input ${errors.productName ? 'error' : ''}`}
                             required
+                            aria-describedby={errors.productName ? 'productName-error' : undefined}
                         />
+                        {errors.productName && (
+                            <div id="productName-error" className="error-message" role="alert">
+                                {errors.productName}
+                            </div>
+                        )}
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="category">Category</label>
-                        <select
-                            id="category"
-                            name="category"
-                            value={formData.category}
+                        <label htmlFor="brandName" className="form-label">
+                            Brand Name <span className="required">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            id="brandName"
+                            name="brandName"
+                            value={formData.brandName}
                             onChange={handleInputChange}
+                            placeholder="e.g. Luxe Beauty Co."
+                            className={`form-input ${errors.brandName ? 'error' : ''}`}
                             required
-                        >
-                            <option value="">Select category</option>
-                            <option value="fashion">Fashion</option>
-                            <option value="beauty">Beauty</option>
-                            <option value="lifestyle">Lifestyle</option>
-                            <option value="jewelry">Jewelry</option>
-                            <option value="accessories">Accessories</option>
-                        </select>
+                            aria-describedby={errors.brandName ? 'brandName-error' : undefined}
+                        />
+                        {errors.brandName && (
+                            <div id="brandName-error" className="error-message" role="alert">
+                                {errors.brandName}
+                            </div>
+                        )}
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="description">Description</label>
-                        <textarea
-                            id="description"
-                            name="description"
-                            value={formData.description}
+                        <label htmlFor="shortTagline" className="form-label">
+                            Short Tagline <span className="optional">(optional)</span>
+                        </label>
+                        <input
+                            type="text"
+                            id="shortTagline"
+                            name="shortTagline"
+                            value={formData.shortTagline}
                             onChange={handleInputChange}
-                            placeholder="Describe your product"
-                            rows="4"
-                            required
+                            placeholder="e.g. Illuminate Your Natural Beauty"
+                            className="form-input"
+                            maxLength="100"
                         />
-                    </div>
-
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label htmlFor="price">Price Range</label>
-                            <select
-                                id="price"
-                                name="price"
-                                value={formData.price}
-                                onChange={handleInputChange}
-                                required
-                            >
-                                <option value="">Select price range</option>
-                                <option value="budget">Budget ($0-50)</option>
-                                <option value="mid">Mid-range ($50-200)</option>
-                                <option value="premium">Premium ($200-500)</option>
-                                <option value="luxury">Luxury ($500+)</option>
-                            </select>
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="style">Preferred Style</label>
-                            <select
-                                id="style"
-                                name="style"
-                                value={formData.style}
-                                onChange={handleInputChange}
-                                required
-                            >
-                                <option value="">Select style</option>
-                                <option value="elegant">Elegant</option>
-                                <option value="casual">Casual</option>
-                                <option value="glamorous">Glamorous</option>
-                                <option value="minimalist">Minimalist</option>
-                                <option value="vintage">Vintage</option>
-                            </select>
+                        <div className="field-help">
+                            A catchy phrase that describes your product (max 100 characters)
                         </div>
                     </div>
 
-                    <div className="form-group">
-                        <label htmlFor="targetAudience">Target Audience</label>
-                        <select
-                            id="targetAudience"
-                            name="targetAudience"
-                            value={formData.targetAudience}
-                            onChange={handleInputChange}
-                            required
-                        >
-                            <option value="">Select target audience</option>
-                            <option value="women">Women</option>
-                            <option value="men">Men</option>
-                            <option value="unisex">Unisex</option>
-                            <option value="children">Children</option>
-                        </select>
+                    <div className="form-group checkbox-group">
+                        <div className="checkbox-wrapper">
+                            <input
+                                type="checkbox"
+                                id="privacyConsent"
+                                name="privacyConsent"
+                                checked={formData.privacyConsent}
+                                onChange={handleInputChange}
+                                className={`form-checkbox ${errors.privacyConsent ? 'error' : ''}`}
+                                required
+                                aria-describedby={errors.privacyConsent ? 'privacyConsent-error' : undefined}
+                            />
+                            <label htmlFor="privacyConsent" className="checkbox-label">
+                                I consent to temporary image storage for processing <span className="required">*</span>
+                            </label>
+                        </div>
+                        {errors.privacyConsent && (
+                            <div id="privacyConsent-error" className="error-message" role="alert">
+                                {errors.privacyConsent}
+                            </div>
+                        )}
                     </div>
+
+                    {errors.submit && (
+                        <div className="error-message submit-error" role="alert">
+                            {errors.submit}
+                        </div>
+                    )}
 
                     <div className="form-actions">
-                        <button type="button" className="btn btn-secondary">
-                            Cancel
+                        <button 
+                            type="button" 
+                            className="btn btn-secondary"
+                            onClick={() => window.history.back()}
+                        >
+                            Back
                         </button>
-                        <button type="submit" className="btn btn-primary">
-                            Create Product
+                        <button 
+                            type="submit" 
+                            className="btn btn-primary"
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? 'Saving...' : 'Next'}
                         </button>
                     </div>
                 </form>
