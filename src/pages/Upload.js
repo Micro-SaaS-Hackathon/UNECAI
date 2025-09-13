@@ -121,11 +121,51 @@ function Upload() {
         throw new Error(`Enhancement failed: ${response.statusText}`);
       }
 
-      // Get base64 image from response
-      const resultData = await response.json();
+      // Get response data
+      const responseText = await response.text();
+      console.log('Raw API Response:', responseText);
+      
+      let resultData;
+      try {
+        resultData = JSON.parse(responseText);
+        console.log('Parsed JSON Response:', resultData);
+      } catch (e) {
+        console.log('Response is not JSON, treating as plain text/base64');
+        // If response is plain text (base64), wrap it in an object
+        resultData = { image: responseText };
+      }
+      
+      // Check if response contains image data
+      if (!resultData.image) {
+        console.error('No image data found in response:', resultData);
+        throw new Error('No image data received from API');
+      }
       
       // Convert response base64 to image URL
-      const enhancedImageUrl = `data:image/jpeg;base64,${resultData.image}`;
+      let base64Data = resultData.image;
+      console.log('Base64 data length:', base64Data.length);
+      console.log('Base64 data starts with:', base64Data.substring(0, 50));
+      
+      // Remove data URL prefix if present
+      if (base64Data.startsWith('data:image/')) {
+        base64Data = base64Data.split(',')[1];
+        console.log('Removed data URL prefix, new length:', base64Data.length);
+      }
+      
+      // Create proper data URL for display
+      const enhancedImageUrl = `data:image/jpeg;base64,${base64Data}`;
+      console.log('Final enhanced image URL length:', enhancedImageUrl.length);
+      
+      // Test if the image URL is valid
+      const testImg = new Image();
+      testImg.onload = () => {
+        console.log('✅ Enhanced image loaded successfully');
+      };
+      testImg.onerror = () => {
+        console.error('❌ Enhanced image failed to load');
+        console.error('Image URL:', enhancedImageUrl.substring(0, 100) + '...');
+      };
+      testImg.src = enhancedImageUrl;
 
       setResult({
         enhancedImage: enhancedImageUrl,
