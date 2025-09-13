@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuraShot - AI Photo Enhancement</title>
+    <link rel="stylesheet" href="../src/styles/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <header class="header">
+            <div class="container">
+                <div class="logo">
+                    <h1>✨ AuraShot</h1>
+                    <p>AI-Powered Photo Enhancement</p>
+                </div>
+                <nav class="nav">
+                    <a href="#home" class="nav-link active">Home</a>
+                    <a href="#upload" class="nav-link">Upload</a>
+                    <a href="#gallery" class="nav-link">Gallery</a>
+                </nav>
+            </div>
+        </header>
+
+        <main class="main">
+            <section id="home" class="hero">
+                <div class="container">
+                    <div class="hero-content">
+                        <h2>Transform Your Photos with AI Magic</h2>
+                        <p>Upload your photos and watch them transform into stunning, professional-quality images with our advanced AI technology.</p>
+                        <div class="cta-buttons">
+                            <button class="btn btn-primary" onclick="showUpload()">Start Enhancing</button>
+                            <button class="btn btn-secondary" onclick="showGallery()">View Gallery</button>
+                        </div>
+                    </div>
+                    <div class="hero-image">
+                        <div class="placeholder-image">
+                            <span>📸</span>
+                            <p>Your enhanced photos will appear here</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="upload" class="upload-section" style="display: none;">
+                <div class="container">
+                    <h2>Upload Your Photo</h2>
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-content">
+                            <span class="upload-icon">📁</span>
+                            <p>Drag and drop your photo here or click to browse</p>
+                            <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="gallery" class="gallery-section" style="display: none;">
+                <div class="container">
+                    <h2>Enhanced Gallery</h2>
+                    <div class="gallery-grid">
+                        <div class="gallery-item">
+                            <div class="placeholder-image">
+                                <span>🎨</span>
+                                <p>Enhanced Photo 1</p>
+                            </div>
+                        </div>
+                        <div class="gallery-item">
+                            <div class="placeholder-image">
+                                <span>✨</span>
+                                <p>Enhanced Photo 2</p>
+                            </div>
+                        </div>
+                        <div class="gallery-item">
+                            <div class="placeholder-image">
+                                <span>💫</span>
+                                <p>Enhanced Photo 3</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <div class="container">
+                <p>&copy; 2024 AuraShot. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Basic navigation functionality
+        function showUpload() {
+            document.getElementById('home').style.display = 'none';
+            document.getElementById('gallery').style.display = 'none';
+            document.getElementById('upload').style.display = 'block';
+            
+            // Update nav
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            document.querySelector('a[href="#upload"]').classList.add('active');
+        }
+
+        function showGallery() {
+            document.getElementById('home').style.display = 'none';
+            document.getElementById('upload').style.display = 'none';
+            document.getElementById('gallery').style.display = 'block';
+            
+            // Update nav
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            document.querySelector('a[href="#gallery"]').classList.add('active');
+        }
+
+        // File upload handling
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drag-over');
+        });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileUpload(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileUpload(e.target.files[0]);
+            }
+        });
+
+        function handleFileUpload(file) {
+            console.log('File selected:', file.name);
+            // TODO: Implement actual file upload logic
+            alert('File upload functionality will be implemented in the full version!');
+        }
+    </script>
+</body>
+</html>
