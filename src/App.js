@@ -57,12 +57,6 @@ function Home() {
             </Link>
           </div>
         </div>
-        <div className="hero-image">
-          <div className="placeholder-image">
-            <span>📸</span>
-            <p>Your enhanced photos will appear here</p>
-          </div>
-        </div>
       </div>
     </section>
   );

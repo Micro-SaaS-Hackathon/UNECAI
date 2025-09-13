@@ -89,31 +89,26 @@ function Upload() {
 
     try {
       setLoading(true);
-      setLoadingMessage('Preparing image...');
+      setLoadingMessage('Converting image...');
 
       // Convert image to base64
-      console.log('Converting image to base64...');
       const base64Image = await fileToBase64(formData.photo);
-      console.log('Image converted successfully, length:', base64Image.length);
+      console.log('Image converted to base64');
 
-      // Prepare request data
+      // Prepare request data as JSON
       const requestData = {
-        image: base64Image,
-        style: formData.style,
-        productName: formData.productName,
-        brandName: formData.brandName,
-        description: formData.description || ''
+        product_info: {
+          name: formData.productName,
+          brand: formData.brandName,
+          display_text: formData.description || ''
+        },
+        style_name: formData.style,
+        image_data: base64Image
       };
-
-      console.log('Sending request to API...', {
-        url: 'https://7dblgaas.rpcld.co/webhook/genfoto12',
-        style: requestData.style,
-        productName: requestData.productName,
-        brandName: requestData.brandName
-      });
 
       setLoadingMessage('Enhancing photo...');
 
+      // Send request to API
       const response = await fetch('https://7dblgaas.rpcld.co/webhook/genfoto12', {
         method: 'POST',
         headers: {
@@ -122,41 +117,29 @@ function Upload() {
         body: JSON.stringify(requestData)
       });
 
-      console.log('Response received:', {
-        status: response.status,
-        statusText: response.statusText
-      });
-
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('API Error:', errorText);
         throw new Error(`Enhancement failed: ${response.statusText}`);
       }
 
-      const apiResponse = await response.json();
-      console.log('API Response:', apiResponse);
-
-      // If we received a base64 image back, convert it for display
-      const displayImage = apiResponse.image 
-        ? `data:image/jpeg;base64,${apiResponse.image}`
-        : URL.createObjectURL(formData.photo);
+      // Get base64 image from response
+      const resultData = await response.json();
+      
+      // Convert response base64 to image URL
+      const enhancedImageUrl = `data:image/jpeg;base64,${resultData.image}`;
 
       setResult({
-        enhancedImage: displayImage,
+        enhancedImage: enhancedImageUrl,
         originalImage: URL.createObjectURL(formData.photo),
-        apiResponse,
-        requestData: {
-          style: formData.style,
-          productName: formData.productName,
-          brandName: formData.brandName,
-          description: formData.description
-        }
+        style: formData.style,
+        productName: formData.productName,
+        brandName: formData.brandName,
+        description: formData.description
       });
 
       setStep(4);
     } catch (error) {
-      console.error('Error details:', error);
-      alert(`Enhancement failed: ${error.message}`);
+      console.error('Error:', error);
+      alert(error.message);
     } finally {
       setLoading(false);
     }
@@ -223,13 +206,13 @@ function Upload() {
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="description">Description (Optional)</label>
+                <label htmlFor="description">Text to Display on Image (Optional)</label>
                 <textarea
                   id="description"
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
-                  placeholder="Add any additional details about your product"
+                  placeholder="Enter text that you want to appear on the enhanced image"
                   rows="3"
                 />
               </div>
@@ -337,12 +320,12 @@ function Upload() {
                   </div>
                 </div>
                 <div className="result-details">
-                  <h3>{formData.productName}</h3>
-                  <p className="brand">{formData.brandName}</p>
-                  {formData.description && (
-                    <p className="description">{formData.description}</p>
+                  <h3>{result.productName}</h3>
+                  <p className="brand">{result.brandName}</p>
+                  {result.description && (
+                    <p className="description">{result.description}</p>
                   )}
-                  <p className="style">Style: {STYLES.find(s => s.id === formData.style)?.name}</p>
+                  <p className="style">Style: {STYLES.find(s => s.id === result.style)?.name}</p>
                 </div>
               </div>
               <div className="step-buttons">
