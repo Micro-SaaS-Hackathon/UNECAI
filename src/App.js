@@ -1,5 +1,6 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, NavLink } from 'react-router-dom';
+import Upload from './pages/Upload';
 
 function App() {
   return (
@@ -7,14 +8,14 @@ function App() {
       <div className="app">
         <header className="header">
           <div className="container">
-            <div className="logo">
+            <Link to="/" className="logo">
               <h1>✨ Sellora</h1>
               <p>AI-Powered Photo Enhancement</p>
-            </div>
+            </Link>
             <nav className="nav">
-              <Link to="/" className="nav-link">Home</Link>
-              <Link to="/upload" className="nav-link">Upload</Link>
-              <Link to="/gallery" className="nav-link">Gallery</Link>
+              <NavLink to="/" className="nav-link" end>Home</NavLink>
+              <NavLink to="/upload" className="nav-link">Upload</NavLink>
+              <NavLink to="/gallery" className="nav-link">Gallery</NavLink>
             </nav>
           </div>
         </header>
@@ -43,10 +44,17 @@ function Home() {
       <div className="container">
         <div className="hero-content">
           <h2>Transform Your Photos with AI Magic</h2>
-          <p>Upload your photos and watch them transform into stunning, professional-quality images with our advanced AI technology.</p>
+          <p>
+            Upload your photos and watch them transform into stunning,
+            professional-quality images with our advanced AI technology.
+          </p>
           <div className="cta-buttons">
-            <Link to="/upload" className="btn btn-primary">Start Enhancing</Link>
-            <Link to="/gallery" className="btn btn-secondary">View Gallery</Link>
+            <Link to="/upload" className="btn btn-primary">
+              Start Enhancing
+            </Link>
+            <Link to="/gallery" className="btn btn-secondary">
+              View Gallery
+            </Link>
           </div>
         </div>
         <div className="hero-image">
@@ -55,17 +63,6 @@ function Home() {
             <p>Your enhanced photos will appear here</p>
           </div>
         </div>
-      </div>
-    </section>
-  );
-}
-
-function Upload() {
-  return (
-    <section className="upload-section">
-      <div className="container">
-        <h2>Upload Your Photo</h2>
-        <p>Coming soon...</p>
       </div>
     </section>
   );

@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const fetch = require('node-fetch');
 const router = express.Router();
 
 // Configure multer for file uploads
@@ -33,6 +34,17 @@ const upload = multer({
   }
 });
 
+// Function to convert file to base64
+function fileToBase64(filePath) {
+  try {
+    const fileData = fs.readFileSync(filePath);
+    return fileData.toString('base64');
+  } catch (error) {
+    console.error('Error converting file to base64:', error);
+    throw error;
+  }
+}
+
 // POST /api/enhance - Enhance photo with selected style
 router.post('/', upload.single('file'), async (req, res) => {
   try {
@@ -43,7 +55,7 @@ router.post('/', upload.single('file'), async (req, res) => {
       });
     }
 
-    const { productName, brandName, style } = req.body;
+    const { productName, brandName, style, description } = req.body;
 
     if (!productName || !brandName || !style) {
       return res.status(400).json({
@@ -52,22 +64,65 @@ router.post('/', upload.single('file'), async (req, res) => {
       });
     }
 
-    // Here you would normally send the image to an external AI service
-    // For now, we'll simulate a processing delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // Convert image to base64
+    const base64Image = fileToBase64(req.file.path);
+    console.log('Image converted to base64, length:', base64Image.length);
 
-    // Return the original image URL for now
-    // In production, this would be the URL of the enhanced image
-    const imageUrl = `/uploads/${req.file.filename}`;
+    // API endpoint
+    const apiUrl = new URL('https://7dblgaas.rpcld.co/webhook/genfoto12');
+    console.log('Sending request to:', apiUrl.toString());
 
+    // Prepare request data
+    const requestBody = {
+      image_data: base64Image,
+      style_name: style,
+      product_info: {
+        name: productName,
+        brand: brandName,
+        description: description || ''
+      }
+    };
+
+    // Send request to API
+    const response = await fetch(apiUrl.toString(), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Origin': 'http://localhost:3000'
+      },
+      body: JSON.stringify(requestBody)
+    });
+
+    console.log('Response status:', response.status);
+    console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('API Error:', {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorText
+      });
+      throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+    }
+
+    const apiResponse = await response.json();
+    console.log('API Response:', apiResponse);
+
+    // Return response to client
     res.status(200).json({
       success: true,
-      message: 'Image enhanced successfully',
+      message: 'Image processed successfully',
       data: {
-        imageUrl,
-        style,
-        productName,
-        brandName
+        originalImage: `data:${req.file.mimetype};base64,${base64Image}`,
+        apiResponse,
+        requestData: {
+          style,
+          productName,
+          brandName,
+          description
+        }
       }
     });
 
